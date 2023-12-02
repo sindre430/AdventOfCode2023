@@ -1,8 +1,10 @@
-﻿namespace AdventOfCode2023.Common.Extensions;
+﻿using System.Text.RegularExpressions;
+
+namespace AdventOfCode2023.Common.Extensions;
 
 public static class StringExtensions
 {
-    public static int? GetFirstNumber(this string s)
+    public static int? GetFirstDigit(this string s)
     {
         foreach (var c in s)
         {
@@ -13,6 +15,17 @@ public static class StringExtensions
         }
 
         return null;
+    }
+
+    public static int? GetFirstNumber(this string s)
+    {
+        Match match = Regex.Match(s, @"-?\d+");
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        return int.Parse(match.Value);
     }
 
     public static string Reverse(this string s)
