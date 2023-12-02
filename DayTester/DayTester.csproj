@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -13,6 +13,8 @@
     <None Remove="Day1\Data.txt" />
     <None Remove="Day1\TestDataPart1.txt" />
     <None Remove="Day1\TestDataPart2.txt" />
+    <None Remove="Day2\Data.txt" />
+    <None Remove="Day2\TestData.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +25,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Day1\TestDataPart1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day2\Data.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day2\TestData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -39,6 +47,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Day1\Day1.csproj" />
+    <ProjectReference Include="..\Day2\Day2.csproj" />
   </ItemGroup>
 
 </Project>

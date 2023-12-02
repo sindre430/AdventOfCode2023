@@ -12,7 +12,7 @@ public class Program
         var calibrationVaules = new List<int>();
         foreach (string value in args)
         {
-            var num1 = value.GetFirstNumber();
+            var num1 = value.GetFirstDigit();
             if (num1 == null)
             {
                 Console.WriteLine($"No number found in input: {value}");
@@ -20,7 +20,7 @@ public class Program
             }
 
             var valReversed = value.Reverse();
-            var num2 = valReversed.GetFirstNumber();
+            var num2 = valReversed.GetFirstDigit();
             var calValue = int.Parse($"{num1}{num2}");
             calibrationVaules.Add(calValue);
 
