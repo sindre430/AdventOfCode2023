@@ -63,7 +63,7 @@ public class Program
         Console.WriteLine();
 
         var sum = gearRatios.Sum();
-        Console.WriteLine($"Sum of all gear rations: {sum}");
+        Console.WriteLine($"Sum of all gear ratios: {sum}");
     }
 
     private static List<Number> GetAllNumbers(string[] schematicLines)
