@@ -17,15 +17,15 @@ public static class StringExtensions
         return null;
     }
 
-    public static int? GetFirstNumber(this string s)
-    {
-        Match match = Regex.Match(s, @"-?\d+");
-        if (!match.Success)
-        {
-            return null;
-        }
+    public static int? GetFirstNumber(this string s) =>
+        GetAllNumbers(s).FirstOrDefault();
 
-        return int.Parse(match.Value);
+    public static List<int> GetAllNumbers(this string s)
+    {
+        var matches = Regex.Matches(s, @"-?\d+");
+
+        return matches.Select(m => int.Parse(m.Value))
+            .ToList();
     }
 
     public static string Reverse(this string s)
