@@ -4,7 +4,7 @@ namespace AdventOfCode2023.Day4;
 
 internal class Card
 {
-    public int Id { get; set; }
+    public int Number { get; set; }
 
     public string RawLine { get; set; }
 
@@ -20,8 +20,8 @@ internal class Card
         RawLine = cardLine;
         
         var cardIdSplit = RawLine.Split(':');
-        Id = cardIdSplit[0].GetFirstNumber() ??
-            throw new InvalidOperationException($"No Card id found in line: {RawLine}");
+        Number = cardIdSplit[0].GetFirstNumber() ??
+            throw new InvalidOperationException($"No Card number found in line: {RawLine}");
 
         var numberSplit = cardIdSplit[1].Split('|');
         WinningNumbers = numberSplit[0].Split(' ')
@@ -33,6 +33,14 @@ internal class Card
             .Where(s => !string.IsNullOrEmpty(s))
             .Select(int.Parse)
             .ToList();
+    }
+
+    public Card(Card card)
+    {
+        Number = card.Number;
+        RawLine = card.RawLine;
+        WinningNumbers = card.WinningNumbers;
+        CardNumbers = card.CardNumbers;
     }
 
     public int GetPoints()
