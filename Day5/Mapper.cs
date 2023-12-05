@@ -2,9 +2,9 @@
 
 internal class Mapper
 {
-    public MapType SourceType { get; set; }
+    public EntityType SourceType { get; set; }
     
-    public MapType DestinationType { get; set; }
+    public EntityType DestinationType { get; set; }
 
     List<MapRange> Ranges { get; set; } = [];
 
@@ -17,8 +17,8 @@ internal class Mapper
             .Split("-to-")
             .Select(s => s.Trim())
             .ToArray();
-        SourceType = Enum.Parse<MapType>(mapTypeSplit[0], ignoreCase: true);
-        DestinationType = Enum.Parse<MapType>(mapTypeSplit[1], ignoreCase: true);
+        SourceType = Enum.Parse<EntityType>(mapTypeSplit[0], ignoreCase: true);
+        DestinationType = Enum.Parse<EntityType>(mapTypeSplit[1], ignoreCase: true);
 
         for(var i=1; i<mapLines.Length; i++)
         {
@@ -28,7 +28,7 @@ internal class Mapper
 
     public long MapSourceToDestination(long number)
     {
-        var mapRange = Ranges.SingleOrDefault(mr => number >= mr.SourceRangeStart && number < mr.SourceRangeStart + mr.RangeLength);
+        var mapRange = Ranges.FirstOrDefault(mr => number >= mr.SourceRangeStart && number < mr.SourceRangeEnd);
         if(mapRange == null)
         {
             return number;

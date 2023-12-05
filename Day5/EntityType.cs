@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode2023.Day5;
 
-internal enum MapType
+internal enum EntityType
 {
     Unknown = 0,
     Seed = 1,
