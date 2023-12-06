@@ -28,6 +28,17 @@ public static class StringExtensions
             .ToList();
     }
 
+    public static long? GetFirstNumberLong(this string s) =>
+        GetAllNumbersLong(s).FirstOrDefault();
+
+    public static List<long> GetAllNumbersLong(this string s)
+    {
+        var matches = Regex.Matches(s, @"-?\d+");
+
+        return matches.Select(m => long.Parse(m.Value))
+            .ToList();
+    }
+
     public static string Reverse(this string s)
     {
         char[] charArray = s.ToCharArray();

@@ -15,6 +15,8 @@
     <None Remove="Day1\TestDataPart2.txt" />
     <None Remove="Day2\Data.txt" />
     <None Remove="Day2\TestData.txt" />
+    <None Remove="Day5\Data.txt" />
+    <None Remove="Day5\TestData.txt" />
     <None Remove="Day4\Data.txt" />
     <None Remove="Day4\TestData.txt" />
     <None Remove="Day3\Data.txt" />
@@ -35,6 +37,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Day2\TestData.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day5\Data.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day5\TestData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Day4\Data.txt">
@@ -66,6 +74,7 @@
     <ProjectReference Include="..\Day2\Day2.csproj" />
     <ProjectReference Include="..\Day3\Day3.csproj" />
     <ProjectReference Include="..\Day4\Day4.csproj" />
+    <ProjectReference Include="..\Day5\Day5.csproj" />
   </ItemGroup>
 
 </Project>
