@@ -30,7 +30,7 @@ public class Program
 
         Console.WriteLine();
         Console.WriteLine("Sorted players:");
-        var totalWinnings = SortPlayersByScore(players, userJokerHands: true, jokerCard: joker).Select((p, i) => {
+        var totalWinnings = SortPlayersByScore(players, useJokerHands: true, jokerCard: joker).Select((p, i) => {
             var score = (players.Count - i) * p.Bet;
             Console.WriteLine($"Player {p.Id}, pos: {i}, winning: {score} (bet: {p.Bet} * {players.Count-i})");
             return score;
@@ -92,29 +92,46 @@ public class Program
         }
     }
 
-    private static List<Player> SortPlayersByScore(List<Player> players, bool userJokerHands = false, CardValue? jokerCard = null)
+    private static List<Player> SortPlayersByScore(List<Player> players, bool useJokerHands = false, CardValue? jokerCard = null)
     {
-        var playersWithHandType = new Dictionary<HandType, List<Player>>();
+        var playersByHandType = GroupPlayersByHandType(players, useJokerHands, jokerCard);
+        var sortedPlayers = OrderPlayersByHandType(playersByHandType, useJokerHands, jokerCard);
+
+        return sortedPlayers;
+    }
+
+    private static Dictionary<HandType, List<Player>> GroupPlayersByHandType(List<Player> players, bool useJokerHands, CardValue? jokerCard)
+    {
+        var playersByHandType = new Dictionary<HandType, List<Player>>();
+
         foreach (var player in players)
         {
-            var handType = userJokerHands ? player.JokerHand!.GetHandType(out _) : 
-                player.Hand.GetHandType(out _);
-            if (!playersWithHandType.TryGetValue(handType, out List<Player>? value))
+            var handType = useJokerHands ? player.JokerHand!.GetHandType(out _) : player.Hand.GetHandType(out _);
+            if (!playersByHandType.TryGetValue(handType, out List<Player>? playersOfType))
             {
-                value = ([]);
-                playersWithHandType.Add(handType, value);
+                playersOfType = new List<Player>();
+                playersByHandType.Add(handType, playersOfType);
             }
 
-            value.Add(player);
+            playersOfType.Add(player);
         }
 
+        return playersByHandType;
+    }
+
+    private static List<Player> OrderPlayersByHandType(Dictionary<HandType, List<Player>> playersByHandType, bool useJokerHands, CardValue? jokerCard)
+    {
         var sortedPlayers = new List<Player>();
-        foreach (var handType in playersWithHandType.OrderByDescending(p => p.Key))
+
+        foreach (var handTypePlayers in playersByHandType.OrderByDescending(p => p.Key))
         {
-            var playersWithHandTypeSorted = (userJokerHands && jokerCard != null) ?
-                [ .. handType.Value.OrderByDescending(p => p.Hand.GetHandOrderValue(overrideValues: new Dictionary<CardValue, string>() { { jokerCard.Value, "01" } })) ] :
-                handType.Value.OrderByDescending(p => p.Hand.GetHandOrderValue()).ToList();
-            sortedPlayers.AddRange(playersWithHandTypeSorted);
+            var playersOfType = handTypePlayers.Value;
+            var orderedPlayers = useJokerHands && jokerCard != null ?
+                playersOfType!.OrderByDescending(p => p.Hand.GetHandOrderValue(
+                    overrideValues: new Dictionary<CardValue, string>() { { jokerCard.Value, "01" } })).ToList() :
+                [.. playersOfType!.OrderByDescending(p => p.Hand.GetHandOrderValue())];
+
+            sortedPlayers.AddRange(orderedPlayers);
         }
 
         return sortedPlayers;
