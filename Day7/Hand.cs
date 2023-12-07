@@ -28,51 +28,54 @@ internal class Hand
         }
     }
 
-    public long GetHandOrderValue()
+    public long GetHandOrderValue(Dictionary<CardValue, string>? overrideValues = null) =>
+        GetHandOrderValue(Cards, overrideValues);
+
+    public static long GetHandOrderValue(List<CardValue> cards, Dictionary<CardValue, string>? overrideValues = null)
     {
         var str = string.Empty;
-        foreach(CardValue value in Cards)
+        foreach (CardValue value in cards)
         {
             switch (value)
             {
                 case CardValue.Two:
-                    str += "02";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Two) ?? "02";
                     break;
                 case CardValue.Three:
-                    str += "03";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Three) ?? "03";
                     break;
                 case CardValue.Four:
-                    str += "04";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Four) ?? "04";
                     break;
                 case CardValue.Five:
-                    str += "05";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Five) ?? "05";
                     break;
                 case CardValue.Six:
-                    str += "06";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Six) ?? "06";
                     break;
                 case CardValue.Seven:
-                    str += "07";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Seven) ?? "07";
                     break;
                 case CardValue.Eight:
-                    str += "08";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Eight) ?? "08";
                     break;
                 case CardValue.Nine:
-                    str += "09";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Nine) ?? "09";
                     break;
                 case CardValue.Ten:
-                    str += "10";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Ten) ?? "10";
                     break;
                 case CardValue.Jack:
-                    str += "11";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Jack) ?? "11";
                     break;
                 case CardValue.Queen:
-                    str += "12";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Queen) ?? "12";
                     break;
                 case CardValue.King:
-                    str += "13";
+                    str += overrideValues?.GetValueOrDefault(CardValue.King) ?? "13";
                     break;
                 case CardValue.Ace:
-                    str += "14";
+                    str += overrideValues?.GetValueOrDefault(CardValue.Ace) ?? "14";
                     break;
             }
         }
@@ -80,63 +83,66 @@ internal class Hand
         return long.Parse(str);
     }
 
-    public HandType GetHandType(out List<CardValue> cards)
+    public HandType GetHandType(out List<CardValue> cards) =>
+        GetHandType(Cards, out cards);
+
+    public static HandType GetHandType(List<CardValue> cards, out List<CardValue> pointCards)
     {
-        cards = Cards;
-        if(Cards.Count == 0)
+        if (cards.Count == 0)
         {
+            pointCards = [];
             return HandType.Unknown;
         }
 
         // Five of a kind
-        var fiveOfAKind = Cards.GroupBy(x => x).FirstOrDefault(x => x.Count() == 5);
-        if(fiveOfAKind != null)
+        var fiveOfAKind = cards.GroupBy(x => x).FirstOrDefault(x => x.Count() == 5);
+        if (fiveOfAKind != null)
         {
-            cards = [.. fiveOfAKind];
+            pointCards = [.. fiveOfAKind];
             return HandType.FiveOfAKind;
         }
 
         // Four of a kind
-        var fourOfAKind = Cards.GroupBy(x => x).FirstOrDefault(x => x.Count() == 4);
-        if(Cards.GroupBy(x => x).Any(x => x.Count() == 4))
+        var fourOfAKind = cards.GroupBy(x => x).FirstOrDefault(x => x.Count() == 4);
+        if (cards.GroupBy(x => x).Any(x => x.Count() == 4))
         {
-            cards = [.. fourOfAKind];
+            pointCards = [.. fourOfAKind];
             return HandType.FourOfAKind;
         }
 
         // Full house
-        var threeOfAKind = Cards.GroupBy(x => x).Where(x => x.Count() >= 3).ToList();
-        var twoOfAKind = Cards.GroupBy(x => x).Where(x => x.Count() >= 2).ToList();
+        var threeOfAKind = cards.GroupBy(x => x).Where(x => x.Count() >= 3).ToList();
+        var twoOfAKind = cards.GroupBy(x => x).Where(x => x.Count() >= 2).ToList();
         var uniqueTwoOfAKind = twoOfAKind.Where(k => !threeOfAKind.Any(tk => tk.Key == k.Key)).ToList();
         if (threeOfAKind.Count != 0 && uniqueTwoOfAKind.Count != 0)
         {
-            cards = threeOfAKind.Concat(uniqueTwoOfAKind).SelectMany(x => x).ToList();
+            pointCards = threeOfAKind.Concat(uniqueTwoOfAKind).SelectMany(x => x).ToList();
             return HandType.FullHouse;
         }
 
         // Three of a kind
-        if(threeOfAKind.Count != 0)
+        if (threeOfAKind.Count != 0)
         {
-            cards = threeOfAKind.SelectMany(x => x).ToList();
+            pointCards = threeOfAKind.SelectMany(x => x).ToList();
             return HandType.ThreeOfAKind;
         }
 
         // Two pairs
-        if(twoOfAKind.Count >= 2)
+        if (twoOfAKind.Count >= 2)
         {
-            cards = twoOfAKind.SelectMany(x => x).ToList();
+            pointCards = twoOfAKind.SelectMany(x => x).ToList();
             return HandType.TwoPairs;
         }
 
         // One pair
-        if(twoOfAKind.Count == 1)
+        if (twoOfAKind.Count == 1)
         {
-            cards = twoOfAKind.SelectMany(x => x).ToList();
+            pointCards = twoOfAKind.SelectMany(x => x).ToList();
             return HandType.OnePair;
         }
 
         // High card
-        cards = [Cards.OrderByDescending(x => x).First()];
+        pointCards = [cards.OrderByDescending(x => x).First()];
         return HandType.HighCard;
     }
 }

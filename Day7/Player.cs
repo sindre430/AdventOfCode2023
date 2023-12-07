@@ -6,6 +6,8 @@ internal class Player
 
     public Hand Hand { get; set; }
 
+    public Hand? JokerHand { get; set; }
+
     public int Bet { get; set; }
 
     public Player(int id, string playerLine)
