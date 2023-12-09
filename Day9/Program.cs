@@ -24,7 +24,7 @@ public class Program
             sequences.Add(new Sequence(line));
         }
 
-        var sumAllNextPredictions = sequences.Sum(s => s.PredictPrevValue());
-        Console.WriteLine($"Sum of all next predictions: {sumAllNextPredictions}");
+        var sumAllPrevPredictions = sequences.Sum(s => s.PredictPrevValue());
+        Console.WriteLine($"Sum of all prev predictions: {sumAllPrevPredictions}");
     }
 }
