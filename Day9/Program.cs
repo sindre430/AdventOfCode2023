@@ -4,10 +4,10 @@ public class Program
 {
     public static void Main() { }
 
-    public static void Part1(string[] mapLines)
+    public static void Part1(string[] sequenceLines)
     {
         List<Sequence> sequences = [];
-        foreach (var line in mapLines)
+        foreach (var line in sequenceLines)
         {
             sequences.Add(new Sequence(line));
         }
@@ -16,10 +16,10 @@ public class Program
         Console.WriteLine($"Sum of all next predictions: {sumAllNextPredictions}");
     }
 
-    public static void Part2(string[] mapLines)
+    public static void Part2(string[] sequenceLines)
     {
         List<Sequence> sequences = [];
-        foreach (var line in mapLines)
+        foreach (var line in sequenceLines)
         {
             sequences.Add(new Sequence(line));
         }
