@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Day10\TestDataPart2.txt" />
     <None Remove="Day1\Data.txt" />
     <None Remove="Day1\TestDataPart1.txt" />
     <None Remove="Day1\TestDataPart2.txt" />
@@ -25,6 +26,8 @@
     <None Remove="Day4\TestData.txt" />
     <None Remove="Day3\Data.txt" />
     <None Remove="Day3\TestData.txt" />
+    <None Remove="Day10\Data.txt" />
+    <None Remove="Day10\TestData.txt" />
     <None Remove="Day9\Data.txt" />
     <None Remove="Day9\TestData.txt" />
     <None Remove="Day8\Data.txt" />
@@ -35,6 +38,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Day10\Data.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day10\TestDataPart2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day10\TestData.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Day9\Data.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -117,6 +129,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Day10\Day10.csproj" />
     <ProjectReference Include="..\Day1\Day1.csproj" />
     <ProjectReference Include="..\Day2\Day2.csproj" />
     <ProjectReference Include="..\Day3\Day3.csproj" />
