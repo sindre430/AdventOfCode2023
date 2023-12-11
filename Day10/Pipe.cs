@@ -1,5 +1,4 @@
 ﻿using Common.Classes;
-using System.Runtime.CompilerServices;
 
 namespace AdventOfCode2023.Day10;
 

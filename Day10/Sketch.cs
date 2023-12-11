@@ -4,7 +4,7 @@ namespace AdventOfCode2023.Day10;
 
 internal class Sketch
 {
-    private readonly Tile[][] tiles = [];
+    public readonly Tile[][] tiles = [];
     
     public Sketch(string[] rawDigram)
     {
@@ -14,13 +14,14 @@ internal class Sketch
             .ToArray()).ToArray();
     }
 
-    public List<Pipe> GetLoop(char startCharacter)
+    public Loop GetLoop(char startCharacter)
     {
         var start = tiles.SelectMany(x => x)
             .FirstOrDefault(x => x.Value.Equals(startCharacter)) ??
             throw new Exception($"No start found (StartCharacter: {startCharacter})");
 
-        var curPipe = new Pipe(start);
+        var startPipe = new Pipe(start);
+        var curPipe = startPipe;
         var pipeCounter = 0;
         var loop = new List<Pipe>();
         while (curPipe.Position != start.Position || pipeCounter == 0)
@@ -43,76 +44,9 @@ internal class Sketch
             pipeCounter++;
         }
 
-        return loop;
-    }
+        loop.First().PrevPipe = loop.Last();
 
-    public List<List<Tile>> GetGroundSections()
-    {
-        var sections = new List<List<Tile>>();
-
-        for(var i=0; i< tiles.Length; i++)
-        {
-            for(var j = 0; j < tiles[i].Length; j++)
-            {
-                var curTile = tiles[i][j];
-
-                // Ignore if tile is not a ground tile
-                if (curTile.Value != '.')
-                    continue;
-
-                // Ignore if tile is already in a section
-                if(sections.Any(x => x.Any(y => y.Position == curTile.Position)))
-                    continue;
-
-                // Process section
-                var section = new List<Tile>() { curTile };
-
-                void ProcessTile(Tile tile)
-                {
-                    var neighbors = GetConnectedNeighbors(tile.Position, new Dictionary<Direction, List<char>>()
-                    {
-                        { Direction.Left, new List<char> { '.' } },
-                        { Direction.Right, new List<char> { '.' } },
-                        { Direction.Top, new List<char> { '.' } },
-                        { Direction.Bottom, new List<char> { '.' } }
-                    });
-
-                    var leftTile = neighbors[Direction.Left];
-                    if (leftTile != null && !section.Any(t => t.Position == leftTile.Position))
-                    {
-                        section.Add(leftTile);
-                        ProcessTile(leftTile);
-                    }
-
-                    var rightTile = neighbors[Direction.Right];
-                    if (rightTile != null && !section.Any(t => t.Position == rightTile.Position))
-                    {
-                        section.Add(rightTile);
-                        ProcessTile(rightTile);
-                    }
-
-                    var topTile = neighbors[Direction.Top];
-                    if (topTile != null && !section.Any(t => t.Position == topTile.Position))
-                    {
-                        section.Add(topTile);
-                        ProcessTile(topTile);
-                    }
-
-                    var bottomTile = neighbors[Direction.Bottom];
-                    if (bottomTile != null && !section.Any(t => t.Position == bottomTile.Position))
-                    {
-                        section.Add(bottomTile);
-                        ProcessTile(bottomTile);
-                    }
-                }
-
-                ProcessTile(curTile);
-
-                sections.Add(section);
-            }
-        }
-
-        return sections;
+        return new Loop(startPipe);
     }
 
     private Dictionary<Direction, Pipe?> GetFittingNeighborPipes(Pipe pipe, char startingCharacter)
