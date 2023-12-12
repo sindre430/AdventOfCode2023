@@ -1,10 +1,11 @@
 ﻿using Common.Classes;
 
-namespace Day11;
+namespace AdventOfCode2023.Day11;
+
 internal class Image
 {
     public char[][] ImageCharacters { get; set; }
-    public Position<int>[][] Galaxies { get; set; }
+    public List<Position<int>> Galaxies { get; set; } = [];
 
     public Image(string[] imageLines) : 
         this(GetCharTable(imageLines)) { } 
@@ -12,16 +13,13 @@ internal class Image
     public Image(char[][] imageCharacters)
     {
         ImageCharacters = imageCharacters;
-        Galaxies = new Position<int>[ImageCharacters.Length][];
-        for (var y = 0; y < ImageCharacters.Length; y++)
+        for (int y = 0; y < imageCharacters.Length; y++)
         {
-            Galaxies[y] = new Position<int>[ImageCharacters[y].Length];
-            for (var x = 0; x < ImageCharacters[y].Length; x++)
+            for (int x = 0; x < imageCharacters[y].Length; x++)
             {
-                var character = ImageCharacters[y][x];
-                if (character.Equals('#'))
+                if (imageCharacters[y][x] == '#')
                 {
-                    Galaxies[y][x] = new Position<int>(x, y);
+                    Galaxies.Add(new Position<int>(x, y));
                 }
             }
         }
@@ -33,7 +31,7 @@ internal class Image
     public static char[][] GetCharTable(string[] imageLines) =>
         imageLines.Select(l => l.ToCharArray()).ToArray();
 
-    public Image Expand()
+    public Image Expand(int emptyLineMultiplier = 2)
     {
         var allColumnsWithoutGalaxies = GetColumnIndexesWhereAllValuesMatchCharacter('.');
         var allRowsWithoutGalaxies = GetRowIndexesWhereAllValuesMatchCharacter('.');
@@ -46,7 +44,11 @@ internal class Image
         {
             var curRowIndex = allRowsWithoutGalaxies[i];
             var rowToCopy = stringList[curRowIndex];
-            stringList.Insert(curRowIndex, rowToCopy);
+
+            for(var j=1; j<emptyLineMultiplier; j++)
+            {
+                stringList.Insert(curRowIndex, rowToCopy);
+            }
         }
 
         // Copy Columns
@@ -57,14 +59,11 @@ internal class Image
 
             for(var j=0; j<stringList.Count; j++)
             {
-                stringList[j] = stringList[j].Insert(curColumnIndex, stringList[j][curColumnIndex].ToString());
+                for(var k=1; k<emptyLineMultiplier; k++)
+                {
+                    stringList[j] = stringList[j].Insert(curColumnIndex, stringList[j][curColumnIndex].ToString());
+                }
             }
-
-           /* stringList.ForEach( =>
-            {
-                var charToCopy = s[curColumnIndex];
-                s = s.Insert(curColumnIndex, charToCopy.ToString());
-            });*/
         }
 
         return new Image(stringList.ToArray());
