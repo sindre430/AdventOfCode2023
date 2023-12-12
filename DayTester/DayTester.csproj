@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Day12\Data.txt" />
+    <None Remove="Day12\TestData.txt" />
     <None Remove="Day10\TestDataPart2.txt" />
     <None Remove="Day1\Data.txt" />
     <None Remove="Day1\TestDataPart1.txt" />
@@ -38,6 +40,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Day12\Data.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day12\TestData.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Day10\Data.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -130,6 +138,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Day10\Day10.csproj" />
+    <ProjectReference Include="..\Day12\Day12.csproj" />
     <ProjectReference Include="..\Day1\Day1.csproj" />
     <ProjectReference Include="..\Day2\Day2.csproj" />
     <ProjectReference Include="..\Day3\Day3.csproj" />
