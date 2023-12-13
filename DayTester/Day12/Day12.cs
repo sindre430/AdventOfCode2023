@@ -21,13 +21,13 @@ public class Day12
     public void Part2RunWithTestData()
     {
         var values = File.ReadAllLines("./Day12/TestData.txt");
-        AdventOfCode2023.Day12.Program.Part2(values).GetAwaiter().GetResult();
+        AdventOfCode2023.Day12.Program.Part2(values, 5).GetAwaiter().GetResult();
     }
 
     [TestMethod]
     public void Part2Run()
     {
         var values = File.ReadAllLines("./Day12/Data.txt");
-        AdventOfCode2023.Day12.Program.Part2(values).GetAwaiter().GetResult();
+        AdventOfCode2023.Day12.Program.Part2(values, 5).GetAwaiter().GetResult();
     }
 }
