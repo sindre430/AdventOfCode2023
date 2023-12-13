@@ -109,39 +109,33 @@ internal class Record(string rawRecord, int id = -1)
         {
             return (ValidateLineWithPatternByParts(line, damagedSpringsPattern), null);
         }
-    }
 
-    public static bool ValidateLineWithPatternByParts(string line, string damagedSpringsPattern)
-    {
-        var damagedSpringsPatternParts = damagedSpringsPattern.Split(',');
-        var lineParts = line.Split('.');
-
-        var stringStartIndex = 0;
-        var linePartIndex = 0;
-        var patternMatch = true;
-        for (var i = 0; i < damagedSpringsPatternParts.Length; i++)
+        if (curChar != '?')
         {
-            if (linePartIndex >= lineParts.Length)
-            {
-                patternMatch = false;
-                break;
-            }
+            throw new InvalidOperationException($"Invalid character in line {curChar}");
+        }
 
-            var curString = lineParts[linePartIndex][stringStartIndex..];
-            var regex = $"[.?]?[#?]{{{int.Parse(damagedSpringsPatternParts[i])}}}";
-            var match = Regex.Match(curString, regex);
-            if (match.Success)
+        // Current char is '?'
+        if(prevChar == '#')
+        {
+            if(amount < curGroupLength)
             {
-                stringStartIndex += match.Index + match.Length;
+                return GetPermutationCount(line[..curLinePos] + '#' + line[(curLinePos + 1)..], damageSpringPattern, group, ++amount, permutations, curLinePos + 1);
             }
             else
             {
-                i--;
-                linePartIndex++;
-                stringStartIndex = 0;
+                return GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, ++group, 0, permutations, curLinePos + 1);
             }
         }
 
-        return patternMatch;
+        if(curGroupLength == -1)
+        {
+            return GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, amount, permutations, curLinePos + 1);
+        }
+
+        permutations = GetPermutationCount(line[..curLinePos] + '#' + line[(curLinePos + 1)..], damageSpringPattern, group, ++amount, permutations, curLinePos + 1);
+        permutations = GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, 0, permutations, curLinePos + 1);
+
+        return permutations;
     }
 }

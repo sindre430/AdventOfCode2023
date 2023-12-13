@@ -1,14 +1,6 @@
-using Common.Extensions;
-using System.Diagnostics;
 using System.Text;
 
 namespace AdventOfCode2023.Day12;
-
-/*
-    TODO: 
-    - Sett antall tråder i parallell 
-    - terminer tråd for regex etter 5 sekunder...
-*/
 
 public class Program
 {
