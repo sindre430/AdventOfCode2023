@@ -1,7 +1,14 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using Common.Extensions;
+using System.Diagnostics;
+using System.Text;
 
 namespace AdventOfCode2023.Day12;
+
+/*
+    TODO: 
+    - Sett antall tråder i parallell 
+    - terminer tråd for regex etter 5 sekunder...
+*/
 
 public class Program
 {
@@ -11,8 +18,18 @@ public class Program
     {
         var records = recordLines.Select(r => new Record(r)).ToList();
 
-        var tasks = records.Select(r => Task.Run(() => r.GetAllPossibleCombinations(r.Line, r.DamagedSpringsPattern)));
-        await Task.WhenAll(tasks);
+        var tasks = records.Select(r => Task.Run(async () => 
+            await r.GetAllPossibleCombinations(r.Line, r.DamagedSpringsPattern))).ToList();
+        var taskLists = tasks.Split(5);
+
+        var totalNumberOfTasks = tasks.Count;
+        var currentTaskNumber = 0;
+        foreach (var taskList in taskLists)
+        {
+            await Task.WhenAll(taskList);
+            currentTaskNumber += taskList.Count;
+            Debug.WriteLine($"Finished {currentTaskNumber}/{totalNumberOfTasks} tasks");
+        }
 
         var sumPossibleCombinations = tasks.Select(t => t.Result.Count).Sum();
 
@@ -26,21 +43,6 @@ public class Program
         var newRecords = records.Select(r => new Record(r))
             .Select(r => $"{string.Join('?', Enumerable.Repeat(r.Line, 5))} {string.Join(',', Enumerable.Repeat(r.DamagedSpringsPattern, 5))}")
             .ToArray();
-
-        foreach(var rec in newRecords)
-        {
-            if (!rec.StartsWith("???????"))
-            {
-                continue;
-            }
-
-            var recc = new Record(rec);
-            var regex = "[.?]?"+string.Join(@"[\.|\?]*", recc.DamagedSpringsPattern.Split(',').Select(groupLength => $"[#?]{{{groupLength}}}"));
-            if (!Regex.Match(recc.Line, regex).Success)
-            {
-                var a = 0;
-            }
-        }
 
         await Part1(newRecords);
     }

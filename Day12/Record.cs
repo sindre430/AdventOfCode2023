@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace AdventOfCode2023.Day12;
 
@@ -13,14 +12,9 @@ internal class Record(string rawRecord)
     public string DamagedSpringsPattern =>
         RawRecord.Split(' ')[1];
 
-    public List<string> GetAllPossibleCombinations(string line, string damageSpringPattern, string? damageSpringRegexPattern = null)
+    public async Task<List<string>> GetAllPossibleCombinations(string line, string damageSpringPattern, string? damageSpringRegexPattern = null)
     {
         List<string> combinations = [];
-
-        if (string.IsNullOrEmpty(damageSpringRegexPattern))
-        {
-            damageSpringRegexPattern = "[.?]?" + string.Join(@"(\.|\?)*", damageSpringPattern.Split(',').Select(groupLength => $"([#?]{{{groupLength}}})"));
-        }
 
         int index = line.IndexOf('?');
         if (index == -1)
@@ -37,17 +31,107 @@ internal class Record(string rawRecord)
             string lineWithOperationalSpring = $"{line[..index]}#{line[(index + 1)..]}";
             string lineWithDamagedSpring = $"{line[..index]}.{line[(index + 1)..]}";
 
-            if (Regex.Match(lineWithOperationalSpring, damageSpringRegexPattern).Success)
+            var lineIsValid = await ValidateLineWithPattern(lineWithOperationalSpring, damageSpringPattern);
+            if(lineIsValid.Item1)
             {
-                combinations.AddRange(GetAllPossibleCombinations(lineWithOperationalSpring, damageSpringPattern));
+                combinations.AddRange(await GetAllPossibleCombinations(lineWithOperationalSpring, damageSpringPattern));
             }
 
-            if (Regex.Match(lineWithDamagedSpring, damageSpringRegexPattern).Success)
+            lineIsValid = await ValidateLineWithPattern(lineWithDamagedSpring, damageSpringPattern);
+            if(lineIsValid.Item1)
             {
-                combinations.AddRange(GetAllPossibleCombinations(lineWithDamagedSpring, damageSpringPattern));
+                var newCombinations = await GetAllPossibleCombinations(lineWithDamagedSpring, damageSpringPattern);
+                combinations.AddRange(newCombinations);
             }
         }
         
         return combinations;
+    }
+
+    public static async Task<(bool, string?)> ValidateLineWithPattern(string line, string damagedSpringsPattern)
+    {
+        try
+        {
+            CancellationTokenSource cancellationTokenSource = new();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
+
+            var recc = new Record($"{line} {damagedSpringsPattern}");
+            var regexStr = "(?:[^#]|^)" + string.Join(@"[\.|\?]+", recc.DamagedSpringsPattern.Split(',').Select(groupLength => $"[#?]{{{groupLength}}}"));
+            var regex = new Regex(
+                regexStr,
+                RegexOptions.Singleline, // Kanskje må denne bort?
+                matchTimeout: TimeSpan.FromSeconds(10));
+            Match match = regex.Match(line);
+            if (match.Success)
+            {
+                var lineWithoutMatch = line.Remove(match.Index, match.Length);
+                if (!match.Value.Contains('?') && lineWithoutMatch.Contains('#'))
+                {
+                    return (false, regexStr);
+                }
+
+                return (true, regexStr);
+            }
+            else
+            {
+                return (false, regexStr);
+            }
+/*
+
+            return (await Task.Run(() =>
+            {
+                var match = Regex.Match(line, regex);
+                if(match.Success)
+                {
+                    var lineWithoutMatch = line.Remove(match.Index, match.Length);
+                    if (!match.Value.Contains('?') && lineWithoutMatch.Contains('#'))
+                    {
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }, cancellationTokenSource.Token), regex);*/
+        }
+        catch(RegexMatchTimeoutException)
+        {
+            return (ValidateLineWithPatternByParts(line, damagedSpringsPattern), null);
+        }
+    }
+
+    public static bool ValidateLineWithPatternByParts(string line, string damagedSpringsPattern)
+    {
+        var damagedSpringsPatternParts = damagedSpringsPattern.Split(',');
+        var lineParts = line.Split('.');
+
+        var stringStartIndex = 0;
+        var linePartIndex = 0;
+        var patternMatch = true;
+        for (var i = 0; i < damagedSpringsPatternParts.Length; i++)
+        {
+            if (linePartIndex >= lineParts.Length)
+            {
+                patternMatch = false;
+                break;
+            }
+
+            var curString = lineParts[linePartIndex][stringStartIndex..];
+            var regex = $"[.?]?[#?]{{{int.Parse(damagedSpringsPatternParts[i])}}}";
+            var match = Regex.Match(curString, regex);
+            if (match.Success)
+            {
+                stringStartIndex += match.Index + match.Length;
+            }
+            else
+            {
+                i--;
+                linePartIndex++;
+                stringStartIndex = 0;
+            }
+        }
+
+        return patternMatch;
     }
 }
