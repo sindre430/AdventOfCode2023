@@ -11,6 +11,8 @@ internal class Platform(string[] platformLines)
 {
     public List<string> Lines { get; set; } = [.. platformLines];
 
+    public long Id => Lines.Select(l => (long)l.GetHashCode()).Sum();
+
     public void Tilt(string direction)
     {
         List<string> DoTilt(List<string> platform){
