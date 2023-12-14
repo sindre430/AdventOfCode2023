@@ -16,40 +16,32 @@ internal class Diagram(List<string> rowLines)
     {
         var res = new List<int>();
 
-        var possibleIndexes = new Dictionary<int, int>();
         for (int i = 0; i < rows.Count - 1; i++)
         {
             if (rows[i].Equals(rows[i + 1], out int smudges, allowedNumMismatches: requiredNumSmudges))
             {
-                possibleIndexes.Add(i, smudges);
-            }
-        }
+                var totSmudges = smudges;
+                var isMirroring = true;
 
-        foreach(var entry in possibleIndexes)
-        {
-            var index = entry.Key;
-            var totSmudges = entry.Value;
-
-            var j = index + 2;
-            var isMirroring = true;
-            for (var i = index-1; i >= 0; i--, j++)
-            {
-                if (j >= rows.Count)
+                var j = i + 2;
+                for (var k = i - 1; k >= 0; k--, j++)
                 {
-                    break;
+                    if (j >= rows.Count)
+                        break;
+
+                    if (!rows[k].Equals(rows[j], out int mismatchCount, allowedNumMismatches: requiredNumSmudges - totSmudges))
+                    {
+                        isMirroring = false;
+                        break;
+                    }
+
+                    totSmudges += mismatchCount;
                 }
 
-                if (!rows[i].Equals(rows[j], out int smudges, allowedNumMismatches: requiredNumSmudges-totSmudges))
+                if (isMirroring && totSmudges == requiredNumSmudges)
                 {
-                    isMirroring = false;
-                    break;
+                    res.Add(i);
                 }
-                totSmudges += smudges;
-            }
-
-            if (isMirroring && totSmudges == requiredNumSmudges)
-            {
-                res.Add(index);
             }
         }
 
