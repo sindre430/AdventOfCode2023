@@ -6,44 +6,48 @@ internal class Diagram(List<string> rowLines)
 {
     readonly List<string> Rows = rowLines;
 
-    public List<int> FindHorizontalReflectionRowIndex() =>
-        FindHorizontalReflectionRowIndex(Rows);
+    public List<int> FindHorizontalReflectionRowIndex(int requiredNumSmudges = 0) =>
+        FindHorizontalReflectionRowIndex(Rows, requiredNumSmudges);
 
-    public List<int> FindVerticalReflectionColumnIndex() =>
-        FindVerticalReflectionColumnIndex(Rows);
+    public List<int> FindVerticalReflectionColumnIndex(int requiredNumSmudges = 0) =>
+        FindVerticalReflectionColumnIndex(Rows, requiredNumSmudges);
 
-    public static List<int> FindHorizontalReflectionRowIndex(List<string> rows)
+    public static List<int> FindHorizontalReflectionRowIndex(List<string> rows, int requiredNumSmudges = 0)
     {
         var res = new List<int>();
 
-        var possibleIndexes = new List<int>();
+        var possibleIndexes = new Dictionary<int, int>();
         for (int i = 0; i < rows.Count - 1; i++)
         {
-            if (rows[i].Equals(rows[i + 1]))
+            if (rows[i].Equals(rows[i + 1], out int smudges, allowedNumMismatches: requiredNumSmudges))
             {
-                possibleIndexes.Add(i);
+                possibleIndexes.Add(i, smudges);
             }
         }
 
-        foreach(var index in possibleIndexes)
+        foreach(var entry in possibleIndexes)
         {
-            var j = index + 1;
+            var index = entry.Key;
+            var totSmudges = entry.Value;
+
+            var j = index + 2;
             var isMirroring = true;
-            for (var i = index; i >= 0; i--, j++)
+            for (var i = index-1; i >= 0; i--, j++)
             {
                 if (j >= rows.Count)
                 {
                     break;
                 }
 
-                if (rows[i] != rows[j])
+                if (!rows[i].Equals(rows[j], out int smudges, allowedNumMismatches: requiredNumSmudges-totSmudges))
                 {
                     isMirroring = false;
                     break;
                 }
+                totSmudges += smudges;
             }
 
-            if (isMirroring)
+            if (isMirroring && totSmudges == requiredNumSmudges)
             {
                 res.Add(index);
             }
@@ -52,9 +56,9 @@ internal class Diagram(List<string> rowLines)
         return res;
     }
 
-    public static List<int> FindVerticalReflectionColumnIndex(List<string> rows)
+    public static List<int> FindVerticalReflectionColumnIndex(List<string> rows, int requiredNumSmudges = 0)
     {
         var mirroredRows = rows.Mirror('\\');
-        return FindHorizontalReflectionRowIndex(mirroredRows);
+        return FindHorizontalReflectionRowIndex(mirroredRows, requiredNumSmudges);
     }
 }

@@ -4,11 +4,11 @@ namespace AdventOfCode2023.Day13;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static void Main()
     {
     }
 
-    public static async Task Part1(string[] patternLines)
+    public static void Part1(string[] patternLines, int numSmudges = 0)
     {
         var sum = 0;
         var rawDiagramLines = patternLines.ToList().SeparateByEmptyLines();
@@ -16,12 +16,12 @@ public class Program
         {
             var diagram = new Diagram(rawDiagramLine);
 
-            var horizontalReflectionRowIndex = diagram.FindHorizontalReflectionRowIndex();
+            var horizontalReflectionRowIndex = diagram.FindHorizontalReflectionRowIndex(numSmudges);
             if(horizontalReflectionRowIndex.Count > 0)
             {
                 sum += (horizontalReflectionRowIndex.First()+1)*100;
             }
-            var verticalReflectionColumnIndex = diagram.FindVerticalReflectionColumnIndex();
+            var verticalReflectionColumnIndex = diagram.FindVerticalReflectionColumnIndex(numSmudges);
             if(verticalReflectionColumnIndex.Count > 0)
             {
                 sum += verticalReflectionColumnIndex.First()+1;
@@ -31,10 +31,6 @@ public class Program
         Console.WriteLine($"Sum: {sum}");
     }
 
-    public static async Task Part2(string[] patternLines)
-    {
-
-
-        await Task.Delay(1);
-    }
+    public static void Part2(string[] patternLines) => 
+        Part1(patternLines, 1);
 }
