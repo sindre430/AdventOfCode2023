@@ -43,19 +43,62 @@ public class Program
             platform.Tilt("S");
             platform.Tilt("E");
         }
-        
 
-        for (var i = 1; i <= 1000000; i++)
+        var numCycleRuns = 1000000000;
+        var foundLoop = false;
+
+        var loop2Start = 0;
+        var loopStart = 0;
+        for (var i = 1; i <= numCycleRuns; i++)
         {
             runCycle();
-            if(platformHistory.TryGetValue(platform.Id, out int cycleRun))
-            {
-                Console.WriteLine($"Found Loop. Loop start: {cycleRun}, Loop length: {i - cycleRun}");
-                break;
-            }
 
-            platformHistory.Add(platform.Id, i);
+            if (!foundLoop && platformHistory.TryGetValue(platform.Id, out int cycleRun))
+            {
+                foundLoop = true;
+                var loopLength = i - cycleRun;
+                loopStart = cycleRun;
+                Console.WriteLine($"Found Loop. Loop start: {cycleRun}, Loop length: {loopLength}, i: {i}");
+                platform.Print();
+
+                var stepsInLoop = (numCycleRuns - cycleRun ) % loopLength;
+                Console.WriteLine("Steps in loop: " + stepsInLoop);
+                var closesPlatformIndex = loopStart + stepsInLoop;
+                Console.WriteLine("Closest platform index: " + closesPlatformIndex);
+                i = numCycleRuns - stepsInLoop;
+                Console.WriteLine($"i = : {i}");
+                //loop2Start = numCycleRuns - (numCycleRuns - i) % loopLength;
+                //var lengthBefLoop = cycleRun - 1;
+                //  i = numCycleRuns - ((numCycleRuns-lengthBefLoop)%loopLength) -1 ;
+                continue;
+            }
+            else if (!foundLoop)
+            {
+                platformHistory.Add(platform.Id, i);
+            }
         }
+        
+        platform.Print();
+        Console.WriteLine();
+
+        
+       /* var plat2 = new Platform(platformLines);
+        void runCycle2()
+        {
+            plat2.Tilt("N");
+            plat2.Tilt("W");
+            plat2.Tilt("S");
+            plat2.Tilt("E");
+        }
+
+        for (var i = (loop2Start); i <= numCycleRuns; i++)
+        {
+            Console.WriteLine($"cycle: {i}");
+            runCycle2();
+        }
+        Console.WriteLine("P2");
+        plat2.Print();
+        Console.WriteLine();
         /*
         Console.WriteLine();
         platform.Print();
