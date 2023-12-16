@@ -58,4 +58,27 @@ public static class StringExtensions
 
         return before + replacement + after;
     }
+
+    public static bool Equals(this string s, string str, out int mismatchCount, int allowedNumMismatches = int.MaxValue)
+    {
+        int minLength = Math.Min(s.Length, str.Length);
+        mismatchCount = Math.Max(s.Length, str.Length)-minLength;
+        if(mismatchCount > allowedNumMismatches)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < minLength; i++)
+        {
+            if (s[i] != str[i])
+            {
+                if (++mismatchCount > allowedNumMismatches)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    } 
 }
