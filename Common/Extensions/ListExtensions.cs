@@ -1,14 +1,30 @@
-﻿namespace AdventOfCode2023.Common.Extensions;
+using System.Text.RegularExpressions;
+using AdventOfCode2023.Common.Services;
+
+namespace AdventOfCode2023.Common.Extensions;
 
 public static class ListExtensions
 {
+    public static List<string> RotateClockwise(this List<string> s) => 
+        s.ConvertToCharArray().ConvertToMultiDimensionalArray().RotateMatrixClockwise().ConvertToJaggedArray().Select(x => new string(x)).ToList();
+
+    public static char[][] ConvertToCharArray(this List<string> s)
+    {
+        var charArray = new char[s.Count][];
+        for (int i = 0; i < s.Count; i++)
+        {
+            charArray[i] = s[i].ToCharArray();
+        }
+        return charArray;
+    }
+
     public static List<List<T>> Split<T>(this List<T> list, int chunkSize)
     {
         var splitLists = new List<List<T>>();
 
         for (int i = 0; i < list.Count; i += chunkSize)
         {
-            splitLists.Add(list.GetRange(i, Math.Min(chunkSize, list.Count - i)));
+            splitLists.Add(list.GetRange(i, System.Math.Min(chunkSize, list.Count - i)));
         }
 
         return splitLists;
