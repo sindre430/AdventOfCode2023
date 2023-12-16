@@ -58,10 +58,6 @@ internal class Record(string rawRecord, int id = -1)
         }
 
         var curLine = line[curLinePos..];
-        if (curLine.Equals(".??.###"))
-        {
-            var i = 0;
-        }
         var curChar = curLine.ElementAtOrDefault(0);
         long combinations;
 
@@ -90,7 +86,6 @@ internal class Record(string rawRecord, int id = -1)
             }
 
             // If next char is '.', marking end of group, and amount of '#'s is less than the current group length, we set combinations to 0 (Bad line)
-            
             var nextChar = line.ElementAtOrDefault(curLinePos + 1);
             if(nextChar == '.')
             {
@@ -98,7 +93,6 @@ internal class Record(string rawRecord, int id = -1)
                 {
                     combinations = 0;
                     Console.WriteLine($"CurChar is '#', next is '.'. Group required more hashes. Return 0");
-                    //AddToCache(curGroupPatterns, curLine, (int)combinations);
                     return combinations;
                 }
 
@@ -112,15 +106,6 @@ internal class Record(string rawRecord, int id = -1)
                 combinations = GetCombinationsCount(line, damageSpringPattern, group, amount+1, curLinePos + 1);
             }
         }
-
-        // If cur char is '.' and previous char was '#' we stop processing current group
-        // If the amount of '#'s in current group is less than the group length, we set combinations to 0 (Bad line)
-     /*   char? prevChar = curLinePos > 0 ? line[curLinePos - 1] : null;
-        if (curChar == '.')
-        {
-          //  amount = 0;
-          //  combinations = GetPermutationCount(line, damageSpringPattern, group, 0, curLinePos + 1);
-        }*/
 
         // If cur char is '?' try to process both cases: '#' and '.'
         else if(curChar == '?')
@@ -146,7 +131,6 @@ internal class Record(string rawRecord, int id = -1)
                 {
                     combinations = 0;
                     Console.WriteLine($"CurChar is '{curChar}'. Stopped group processing. Not enough '#'. Return 0");
-                    // AddToCache(curGroupPatterns, curLine, (int)combinations);
                     return combinations;
                 }
                 group++;
@@ -161,10 +145,6 @@ internal class Record(string rawRecord, int id = -1)
         try
         {
             var cacheLine = line[(line.Length - (curLine.Length + amount))..];
-            if (cacheLine.Equals(".?.###"))
-            {
-                var i = 0;
-            }
             Console.WriteLine($"Add line {cacheLine} pattern: {GetGroupPatternId(damageSpringPattern[group..])}  to cache with combinations {combinations}");
             AddToCache(damageSpringPattern[group..], cacheLine, (int)combinations);
         }
@@ -174,156 +154,5 @@ internal class Record(string rawRecord, int id = -1)
         }
        
         return combinations;
-
-        /*
-                if (curChar != '?')
-                {
-                    throw new InvalidOperationException($"Invalid character in line {curChar}");
-                }
-
-                // Current char is '?'
-                if (prevChar == '#')
-                {
-                    if (amount < curGroup)
-                    {
-                        return GetPermutationCount(line[..curLinePos] + '#' + line[(curLinePos + 1)..], damageSpringPattern, group, ++amount, permutations, curLinePos + 1);
-                    }
-                    else
-                    {
-                        var count = GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, 0, permutations, curLinePos + 1);
-                        return count;
-                    }
-                }
-
-                if (curGroup == -1)
-                {
-                    return GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, amount, permutations, curLinePos + 1);
-                }
-
-                permutations = GetPermutationCount(line[..curLinePos] + '#' + line[(curLinePos + 1)..], damageSpringPattern, group, ++amount, permutations, curLinePos + 1);
-                permutations = GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, 0, permutations, curLinePos + 1);
-
-
-                // var curLine = line[curLinePos..];
-                var curGroupLineCache = GroupLineCache.ElementAtOrDefault(curGroup);
-                if (curGroupLineCache == null)
-                {
-                    curGroupLineCache = new Dictionary<string, int>();
-                    GroupLineCache.Add(curGroupLineCache);
-                }
-
-                if (curLine.Equals("???"))
-                {
-                    var i = 0;
-                }
-                curGroupLineCache[curLine] = (int)(permutations - oldPermutations);
-
-
-                return permutations;*/
     }
-
-    /*
-     *  private static long GetPermutationCount(string line, int[] damageSpringPattern, int group = 0, int amount = 0, long permutations = 0, int curLinePos = 0)
-    {
-        void AddToCache(int group, string line, int permutations)
-        {
-            var curGroupLineCache = GroupLineCache.ElementAtOrDefault(group);
-            if (curGroupLineCache == null)
-            {
-                curGroupLineCache = new Dictionary<string, int>();
-                GroupLineCache.Add(curGroupLineCache);
-            }
-
-            curGroupLineCache[line] = permutations;
-        }
-        
-        var oldPermutations = permutations;
-        var curGroupLength = group < damageSpringPattern.Length ? damageSpringPattern[group] : -1;
-        if (curLinePos >= line.Length)
-        {
-            return (curGroupLength == -1 || (group == damageSpringPattern.Length - 1 && amount == curGroupLength)) ?
-                ++permutations : permutations;
-        }
-
-            var curLine = line[curLinePos..];
-        if(amount == 0)
-        {
-            var cached = GroupLineCache.ElementAtOrDefault(curGroupLength)?.GetValueOrDefault(curLine);
-            if (cached != null)
-            {
-                Console.WriteLine($"Found cached value for group {curGroupLength} and line {curLine} (Combinations: {cached.Value})");
-                return cached.Value;
-            }
-        }
-        
-
-        var curChar = line[curLinePos];
-        if (curChar == '#')
-        {
-            return ++amount > curGroupLength ? permutations :
-                GetPermutationCount(line, damageSpringPattern, group, amount, permutations, curLinePos + 1);
-        }
-
-        char? prevChar = curLinePos > 0 ? line[curLinePos - 1] : null;
-        if (curChar == '.')
-        {
-            if (prevChar == '#')
-            {
-                if (amount < curGroupLength)
-                {
-                    return permutations;
-                }
-
-                group++;
-            }
-
-            return GetPermutationCount(line, damageSpringPattern, group, 0, permutations, curLinePos + 1);
-        }
-
-        if (curChar != '?')
-        {
-            throw new InvalidOperationException($"Invalid character in line {curChar}");
-        }
-
-        // Current char is '?'
-        if (prevChar == '#')
-        {
-            if (amount < curGroupLength)
-            {
-                return GetPermutationCount(line[..curLinePos] + '#' + line[(curLinePos + 1)..], damageSpringPattern, group, ++amount, permutations, curLinePos + 1);
-            }
-            else
-            {
-                var count = GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, 0, permutations, curLinePos + 1);
-                return count;
-            }
-        }
-
-        if (curGroupLength == -1)
-        {
-            return GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, amount, permutations, curLinePos + 1);
-        }
-
-        permutations = GetPermutationCount(line[..curLinePos] + '#' + line[(curLinePos + 1)..], damageSpringPattern, group, ++amount, permutations, curLinePos + 1);
-        permutations = GetPermutationCount(line[..curLinePos] + '.' + line[(curLinePos + 1)..], damageSpringPattern, group, 0, permutations, curLinePos + 1);
-
-    
-           // var curLine = line[curLinePos..];
-            var curGroupLineCache = GroupLineCache.ElementAtOrDefault(curGroupLength);
-            if (curGroupLineCache == null)
-            {
-                curGroupLineCache = new Dictionary<string, int>();
-                GroupLineCache.Add(curGroupLineCache);
-            }
-
-        if (curLine.Equals("???"))
-        {
-            var i = 0;
-        }
-           curGroupLineCache[curLine] = (int)(permutations - oldPermutations);
-       
-
-        return permutations;
-    }
-     * */
 }

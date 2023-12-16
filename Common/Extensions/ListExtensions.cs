@@ -24,7 +24,7 @@ public static class ListExtensions
 
         for (int i = 0; i < list.Count; i += chunkSize)
         {
-            splitLists.Add(list.GetRange(i, Math.Min(chunkSize, list.Count - i)));
+            splitLists.Add(list.GetRange(i, System.Math.Min(chunkSize, list.Count - i)));
         }
 
         return splitLists;
@@ -119,6 +119,5 @@ public static class ListExtensions
         }
 
         return separatedLists;
->>>>>>> origin/main
     }
 }
