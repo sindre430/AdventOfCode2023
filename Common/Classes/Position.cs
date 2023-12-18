@@ -9,4 +9,7 @@ public class Position<T>(T x, T y)
     public T ManhattanDistance(Position<T> position) =>
         Math.Abs((dynamic) X - (dynamic) position.X) +
         Math.Abs((dynamic) Y - (dynamic) position.Y);
+
+    public static Position<T> Clone(Position<T> pos) =>
+        new(pos.X, pos.Y);
 }
