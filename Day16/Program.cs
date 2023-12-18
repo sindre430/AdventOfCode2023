@@ -1,7 +1,6 @@
 ﻿using Common.Classes;
 using Common.Enums;
 using System.Data;
-using System.Runtime.InteropServices;
 
 namespace AdventOfCode2023.Day16;
 
@@ -62,6 +61,7 @@ public class Program
     static void ProcessContraption(Contraption contraption, Beam startBeam)
     {
         contraption.EnergizedTiles.Clear();
+        Beam.History.Clear();
         
         var beams = new List<Beam> { startBeam };
         var newBeams = new List<Beam>();

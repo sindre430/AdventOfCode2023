@@ -10,7 +10,7 @@ internal class Beam(Contraption contraption, Position<int> position, Direction d
 
     public Direction Direction { get; set; } = direction;
 
-    public Dictionary<Position<int>, Direction> History = [];
+    public static Dictionary<Position<int>, Direction> History = [];
 
     public void Tick(out Beam? newBeam)
     {
